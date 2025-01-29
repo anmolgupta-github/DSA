@@ -1,184 +1,96 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include<stdio.h>
+#include<stdlib.h>
 
-typedef struct Node
-{
-    int data;
-    struct Node *next;
-    struct Node *prev;
-} node;
+typedef struct node *nodePtr;
+typedef struct node {
+nodePtr llink;
+int data;
+nodePtr rlink;
+}node;
 
-node *createNode(int data)
+nodePtr head;
+
+void dinsert() 
 {
-    node *newNode = (node *)malloc(sizeof(node));
-    newNode->data = data;
-    newNode->next = NULL;
-    newNode->prev = NULL;
-    return newNode;
+	int n;
+	nodePtr temp;
+	printf("Enter the info for the new node");
+	scanf("%d", &n);
+	temp=(nodePtr)malloc(sizeof(node));
+	temp->data=n;
+    temp->llink = head; 
+    temp->rlink = head->rlink; 
+    head->rlink-> llink = temp; 
+    head->rlink = temp;
 }
 
-node *insertAtBeginning(node *head, int newData)
+void ddelete()
 {
-    node *newNode = createNode(newData);
-
-    if (head == NULL)
-    {
-        head = newNode;
+	nodePtr temp=head->rlink;
+	if (head->rlink == head)
+		printf("Deletion of head node not permitted.\n");
+	else 
+	{ 
+		head->rlink = temp->rlink;
+		temp->rlink->llink = head;
+		printf("removing node with data %d\n",temp->data);
+		free(temp);
     }
-    else
-    {
-        newNode->next = head;
-        head->prev = newNode;
-        head = newNode;
-    }
-
-    return head;
 }
 
-node *insertAtEnd(node *head, int newData)
+void displayRight()
 {
-    node *newNode = createNode(newData);
-
-    if (head == NULL)
-    {
-        head = newNode;
-    }
-    else
-    {
-        node *temp = head;
-        while (temp->next != NULL)
-        {
-            temp = temp->next;
-        }
-        temp->next = newNode;
-        newNode->prev = temp;
-    }
-
-    return head;
+	nodePtr temp;
+	if (head->rlink == head)
+		printf("Empty list.\n");
+	else 
+	{ 
+		for(temp=head->rlink; temp->rlink != head; temp = temp->rlink)
+			printf("%d\t", temp->data);
+		printf("%d\t", temp->data);
+		printf("\n\n");
+	}
 }
 
-node *deleteFromBeginning(node *head)
+void displayLeft()
 {
-    if (head == NULL)
-    {
-        printf("Cannot delete from an empty doubly linked list.\n");
-        return head;
-    }
-
-    node *temp = head;
-
-    if (head->next != NULL)
-    {
-        head = head->next;
-        head->prev = NULL;
-    }
-    else
-    {
-        head = NULL;
-    }
-
-    free(temp);
-
-    return head;
-}
-
-node *deleteFromEnd(node *head)
-{
-    if (head == NULL)
-    {
-        printf("Cannot delete from an empty doubly linked list.\n");
-        return head;
-    }
-
-    node *temp = head;
-
-    if (head->next != NULL)
-    {
-        while (temp->next != NULL)
-        {
-            temp = temp->next;
-        }
-        temp->prev->next = NULL;
-    }
-    else
-    {
-        head = NULL;
-    }
-
-    free(temp);
-
-    return head;
-}
-
-void displayList(node *head)
-{
-    while (head != NULL)
-    {
-        printf("%d <-> ", head->data);
-        head = head->next;
-    }
-    printf("NULL\n");
-}
-
-void freeList(node *head)
-{
-    while (head != NULL)
-    {
-        node *temp = head;
-        head = head->next;
-        free(temp);
-    }
+	nodePtr temp;
+	if (head->llink == head)
+		printf("Empty list.\n");
+	else 
+	{ 
+		for(temp=head->llink; temp->llink != head; temp = temp->llink)
+			printf("%d\t", temp->data);
+		printf("%d\t", temp->data);
+		printf("\n\n");
+	}
 }
 
 int main()
 {
-    node *head = NULL;
-    int choice, data;
-
-    do
-    {
-        printf("\nDoubly Linked List Operations:\n");
-        printf("1. Insert at Beginning\n");
-        printf("2. Insert at End\n");
-        printf("3. Delete from Beginning\n");
-        printf("4. Delete from End\n");
-        printf("5. Display List\n");
-        printf("6. Exit\n");
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
-
-        switch (choice)
-        {
-        case 1:
-            printf("Enter data to insert at beginning: ");
-            scanf("%d", &data);
-            head = insertAtBeginning(head, data);
-            break;
-        case 2:
-            printf("Enter data to insert at end: ");
-            scanf("%d", &data);
-            head = insertAtEnd(head, data);
-            break;
-        case 3:
-            head = deleteFromBeginning(head);
-            printf("Deleted from beginning.\n");
-            break;
-        case 4:
-            head = deleteFromEnd(head);
-            printf("Deleted from end.\n");
-            break;
-        case 5:
-            printf("Doubly Linked List: ");
-            displayList(head);
-            break;
-        case 6:
-            printf("Exiting...\n");
-            break;
-        default:
-            printf("Invalid choice. Please try again.\n");
-        }
-    } while (choice != 6);
-
-    freeList(head);
-    return 0;
+	unsigned int choice;
+	head=(nodePtr)malloc(sizeof(node));
+	head->rlink=head;
+	head->llink=head;
+	
+	while(1)
+	{
+		printf("1:insert a node in DLL \n2:delete a node from DLL \n3:display the DLL forward\n4:display the DLL backward\n5:exit\n");
+		scanf("%u", &choice);
+		switch(choice)
+		{
+			case 1: dinsert();
+					break;
+			case 2: ddelete();
+					break;
+			case 3: displayRight();
+					break;
+			case 4: displayLeft();
+					break;
+			case 5: exit(0);
+					break;
+			default: printf("Invalid choice... try again\n");
+		}
+	}
+	return 0;
 }
